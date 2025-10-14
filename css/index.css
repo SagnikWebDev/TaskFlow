@@ -1,0 +1,229 @@
+*,
+::before,
+::after {
+  margin: 0;
+  box-sizing: border-box;
+}
+button {
+  cursor: pointer;
+}
+
+header {
+  display: flex;
+  justify-content: start;
+  padding: 10px;
+}
+.icon {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2px;
+}
+.icon_logo {
+  width: 20px;
+  margin-top: 4px;
+}
+.icon_title {
+  font-size: 20px;
+}
+
+.hero_section {
+  display: grid;
+  place-items: center;
+  height: 45dvh;
+  padding: 10px;
+}
+.hero_wrapper {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: 1352px;
+  height: 100%;
+  border-radius: 5px;
+  background: url("../src/hero-section-img.jpg");
+  color: white;
+}
+.hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+}
+.hero_content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+.hero_header_text {
+  text-align: center;
+  font-size: 26px;
+}
+.hero_content_text {
+  font-size: 14px;
+}
+.hero_btn {
+  padding: 5px;
+  border: 1px solid white;
+  border-radius: 5px;
+  background-color: red;
+  color: white;
+}
+
+.projects_section {
+  display: grid;
+  place-items: center;
+}
+.projects_container {
+  width: 100%;
+  max-width: 1352px;
+  padding: 10px;
+}
+.project_container_title_wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-block: 10px;
+}
+.project_container_title {
+  font-size: 25px;
+}
+.btn_container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+.project_wrapper {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+}
+.project {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid black;
+  background-color: gray;
+}
+.empty_project_container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 28dvh;
+  border: 1px solid black;
+}
+
+.project_dashboard_section {
+  display: none;
+  place-items: center;
+  padding: 10px;
+}
+.project_dashboard {
+  width: 100%;
+  max-width: 1352px;
+}
+.project_dashboard,
+.kanban_board_container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.kanban_board_container {
+  gap: 20px;
+}
+.homeroute_link {
+  cursor: pointer;
+}
+.kanban_board_col_wrapper {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.kanban_board {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid;
+}
+
+.kanban_board_col_item_header_text_wrapper {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+  border: 1px solid black;
+}
+.kanban_board_col_items_tasks_task_container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 5px;
+  padding: 5px;
+  border: 1px solid black;
+  border-radius: 5px;
+}
+.add_kanban_board_col_items_task {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid black;
+  border-radius: 5px;
+}
+.add_kanban_board_col_items_task > * {
+  margin-top: 10px;
+}
+.empty_tasks_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60dvh;
+  border: 1px solid;
+}
+@media (max-width: 450px) {
+  .kanban_board_col_wrapper {
+    grid-template-rows: repeat(3, 1fr);
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+}
+
+.modals_section {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: none;
+  place-items: center;
+  width: 100%;
+  height: 100dvh;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.project_modal,
+.kanban_modal {
+  display: none;
+  flex-direction: column;
+  gap: 20px;
+  width: 20rem;
+  height: 13rem;
+  padding: 1rem;
+  border: 1px solid white;
+  border-radius: 5px;
+  background-color: black;
+  color: white;
+}
+.project_modal_form,
+.kanban_modal_form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.create_project,
+.create_kanban {
+  padding: 5px;
+}
