@@ -5,13 +5,13 @@ export function ArgumentErrorHandling(msg, variable) {
   }
 }
 
-export function displayElement(action, element) {
+export function displayElement(action, element, display = "flex") {
   if (action == "hide") {
     element.style.display = "none";
     element.setAttribute("id", "hide");
   }
   if (action == "unhide") {
-    element.style.display = "flex";
+    element.style.display = display;
     element.setAttribute("id", "unhide");
   }
 }

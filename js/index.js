@@ -26,7 +26,7 @@ function displayEmptyTasksContainer(action) {
 const projects_section = document.querySelector(".projects_section");
 
 function displayProjectsSection(action) {
-  displayElement(action, projects_section);
+  displayElement(action, projects_section, "grid");
 }
 
 const project_dashboard_section = document.querySelector(
@@ -34,13 +34,13 @@ const project_dashboard_section = document.querySelector(
 );
 
 function displayProjectDashboardSection(action) {
-  displayElement(action, project_dashboard_section);
+  displayElement(action, project_dashboard_section, "grid");
 }
 
 const hero_section = document.querySelector(".hero_section");
 
 function displayHeroSection(action) {
-  displayElement(action, hero_section);
+  displayElement(action, hero_section, "grid");
 }
 
 const modal_section_element = document.querySelector(".modals_section");

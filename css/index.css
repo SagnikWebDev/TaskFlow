@@ -27,6 +27,10 @@ header {
   font-size: 20px;
 }
 
+main {
+  margin-inline: auto;
+}
+
 .hero_section {
   display: grid;
   place-items: center;

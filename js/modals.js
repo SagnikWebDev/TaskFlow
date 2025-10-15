@@ -313,6 +313,7 @@ export class Projects {
     const project_element = document.createElement("div");
     project_element.setAttribute("class", "project");
     project_element.setAttribute("id", project.Id);
+    project_element.setAttribute("draggable", "true");
 
     const project_name_element = document.createElement("h4");
     const project_name_element_text = document.createTextNode(name);
@@ -330,6 +331,60 @@ export class Projects {
     project_btn_element.setAttribute("class", "project_delete_btn");
     project_btn_element.appendChild(project_btn_element_text);
     project_element.appendChild(project_btn_element);
+
+    project_element.addEventListener("dragstart", (e) => {
+      const target_element = e.target;
+      const id = target_element.id;
+      const content = target_element.firstElementChild.innerHTML;
+      const contentDate =
+        target_element.firstElementChild.nextElementSibling.innerHTML;
+
+      e.dataTransfer.setData(
+        "text/plain",
+        `name: ${content};id: ${id};date: ${contentDate}`
+      );
+      e.dataTransfer.effectAllowed = "move";
+    });
+
+    project_element.addEventListener("dragover", (e) => {
+      e.preventDefault();
+    });
+
+    project_element.addEventListener("drop", (e) => {
+      e.preventDefault();
+      const draggedText = e.dataTransfer.getData("text/plain");
+
+      const data = `${draggedText}`.split(";");
+      const data_name = data[0];
+      const data_id = data[1];
+      const data_date = data[2];
+
+      const id = data_id.split(":")[1].trim();
+      const name = data_name.split(":")[1].trim();
+      const date = data_date.split(":")[1].trim();
+
+      const target_element = e.target;
+      const target_element_contentElement = target_element.firstElementChild;
+      const target_element_dateElement =
+        target_element_contentElement.nextElementSibling;
+      const target_element_btnElement =
+        target_element_dateElement.nextElementSibling;
+
+      const dragELement = document.getElementById(id);
+      const contentElement = dragELement.firstElementChild;
+      const dateElement = contentElement.nextElementSibling;
+      const btnElement = dateElement.nextElementSibling;
+
+      dragELement.id = target_element.id;
+      contentElement.innerHTML = target_element_contentElement.innerHTML;
+      dateElement.innerHTML = target_element_dateElement.innerHTML;
+      btnElement.dataset.Id = target_element_btnElement.dataset.Id;
+
+      target_element.id = id;
+      target_element_contentElement.innerHTML = name;
+      target_element_dateElement.innerHTML = date;
+      target_element_btnElement.dataset.Id = id;
+    });
 
     return project_element;
   }
