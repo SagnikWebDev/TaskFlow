@@ -214,7 +214,7 @@ main {
   flex-direction: column;
   gap: 20px;
   width: 20rem;
-  height: 13rem;
+  height: 14rem;
   padding: 1rem;
   border: 1px solid white;
   border-radius: 5px;
@@ -230,4 +230,12 @@ main {
 .create_project,
 .create_kanban {
   padding: 5px;
+  margin-top: 10px;
+}
+
+.kanban_modal_error_msg,
+.project_modal_error_msg {
+  display: none;
+  color: red;
+  margin-top: -14px;
 }

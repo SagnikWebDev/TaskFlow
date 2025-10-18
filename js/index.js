@@ -77,6 +77,18 @@ function displayKanbanModal(action) {
   }
 }
 
+const kanbanErrorMsgElement = document.querySelector(".kanban_modal_error_msg");
+const projectErrorMsgElement = document.querySelector(
+  ".project_modal_error_msg"
+);
+
+function displayErrorMsgOnKanbanForm(action) {
+  displayElement(action, kanbanErrorMsgElement, "block");
+}
+function displayErrorMsgOnProjectForm(action) {
+  displayElement(action, projectErrorMsgElement, "block");
+}
+
 // start
 
 const projects = new Projects();
@@ -89,10 +101,14 @@ if (!projects.empty) {
   displayEmptyProjectContainer("hide");
 }
 
+const project_create_Modal_input_element =
+  document.querySelector("#project_name");
+
 const project_create_btn_element = document.querySelector(".hero_btn");
 
 project_create_btn_element.addEventListener("click", (event) => {
   displayProjectModal("open");
+  project_create_Modal_input_element.focus();
 });
 
 const project_create_Modal_btn__container_element =
@@ -104,17 +120,14 @@ project_create_Modal_btn__container_element.addEventListener(
     displayProjectModal("close");
   }
 );
-
 const project_create_Modal_btn_element =
   document.querySelector(".create_project");
-const project_create_Modal_input_element =
-  document.querySelector("#project_name");
-
 project_create_Modal_btn_element.addEventListener("click", (event) => {
   event.preventDefault();
 
   const projectName = project_create_Modal_input_element.value;
 
+  if (!projectName) displayErrorMsgOnProjectForm("unhide");
   const project = projects.createNewProject(projectName);
 
   if (projects.empty) projects.empty = false;
@@ -128,6 +141,8 @@ project_create_Modal_btn_element.addEventListener("click", (event) => {
   projects.displayProjectElementsOnUi("unhide");
 
   projects.updateProjectElementsOnUi();
+
+  displayErrorMsgOnProjectForm("hide");
 
   displayProjectModal("close");
 });
@@ -209,28 +224,33 @@ const inProgress_Add_Btn = document.querySelector(
 );
 const done_Add_Btn = document.querySelector(".add_kanban_board_col_done_task");
 
+const task_create_input_element = document.querySelector(
+  "#kanban_modal_input_label_name"
+);
+
 todo_Add_Btn.addEventListener("click", (event) => {
   displayKanbanModal("open");
   task_create_btn_element.dataset.TaskType = "todo";
+  task_create_input_element.focus();
 });
 inProgress_Add_Btn.addEventListener("click", (event) => {
   displayKanbanModal("open");
   task_create_btn_element.dataset.TaskType = "inProgress";
+  task_create_input_element.focus();
 });
 done_Add_Btn.addEventListener("click", (event) => {
   displayKanbanModal("open");
   task_create_btn_element.dataset.TaskType = "done";
+  task_create_input_element.focus();
 });
-
-const task_create_input_element = document.querySelector(
-  "#kanban_modal_input_label_name"
-);
 
 task_create_btn_element.addEventListener("click", (event) => {
   event.preventDefault();
   const target_element = event.target;
 
   const taskName = task_create_input_element.value;
+
+  if (!taskName) displayErrorMsgOnKanbanForm("unhide");
 
   const project_id = target_element.dataset.projectId;
 
@@ -259,28 +279,28 @@ task_create_btn_element.addEventListener("click", (event) => {
 
   task_create_input_element.value = "";
 
+  displayErrorMsgOnKanbanForm("hide");
+
   displayKanbanModal("close");
 });
-
+const project_dashboard_text_element = document.querySelector(
+  ".project_dashboard_text"
+);
 const kanban_board_todo_tasks_container = document.querySelector(
   ".kanban_board_col_todo_tasks"
 );
 const kanban_board_inProgress_tasks_container = document.querySelector(
-  ".kanban_board_col_inProgess_tasks"
+  ".kanban_board_col_inProgress_tasks"
 );
 const kanban_board_done_tasks_container = document.querySelector(
   ".kanban_board_col_done_tasks"
-);
-
-const project_dashboard_text_element = document.querySelector(
-  ".project_dashboard_text"
 );
 
 kanban_board_todo_tasks_container.addEventListener("click", (event) => {
   const target_element = event.target;
 
   if (target_element.className.includes("del_kanban_board_col_todo_task")) {
-    const todoTask_id = target_element.id;
+    const todoTask_id = target_element.dataset.Id;
 
     const project_id = project_dashboard_text_element.dataset.projectId;
 
@@ -288,11 +308,13 @@ kanban_board_todo_tasks_container.addEventListener("click", (event) => {
 
     project.deleteTaskOnTodoData(todoTask_id);
 
-    projects.saveProjectsOnLocalStorage();
+    const kanban_board_empty_value = project.updateKanbanEmptyValue();
 
-    if (!project.kanban_table_data.length) {
+    if (kanban_board_empty_value) {
       displayEmptyTasksContainer("unhide");
     }
+
+    projects.saveProjectsOnLocalStorage();
 
     project.updateKanbanBoardOnUi();
   }
@@ -304,7 +326,7 @@ kanban_board_inProgress_tasks_container.addEventListener("click", (event) => {
   if (
     target_element.className.includes("del_kanban_board_col_inProgress_task")
   ) {
-    const inProgressTask_id = target_element.id;
+    const inProgressTask_id = target_element.dataset.Id;
 
     const project_id = project_dashboard_text_element.dataset.projectId;
 
@@ -312,11 +334,13 @@ kanban_board_inProgress_tasks_container.addEventListener("click", (event) => {
 
     project.deleteTaskOnInProgressData(inProgressTask_id);
 
-    projects.saveProjectsOnLocalStorage();
+    const kanban_board_empty_value = project.updateKanbanEmptyValue();
 
-    if (!project.kanban_table_data.length) {
+    if (kanban_board_empty_value) {
       displayEmptyTasksContainer("unhide");
     }
+
+    projects.saveProjectsOnLocalStorage();
 
     project.updateKanbanBoardOnUi();
   }
@@ -326,7 +350,7 @@ kanban_board_done_tasks_container.addEventListener("click", (event) => {
   const target_element = event.target;
 
   if (target_element.className.includes("del_kanban_board_col_done_task")) {
-    const doneTask_id = target_element.id;
+    const doneTask_id = target_element.dataset.Id;
 
     const project_id = project_dashboard_text_element.dataset.projectId;
 
@@ -334,15 +358,193 @@ kanban_board_done_tasks_container.addEventListener("click", (event) => {
 
     project.deleteTaskOnDoneData(doneTask_id);
 
-    projects.saveProjectsOnLocalStorage();
+    const kanban_board_empty_value = project.updateKanbanEmptyValue();
 
-    if (!project.kanban_table_data.length) {
+    if (kanban_board_empty_value) {
       displayEmptyTasksContainer("unhide");
     }
+
+    projects.saveProjectsOnLocalStorage();
 
     project.updateKanbanBoardOnUi();
   }
 });
+
+function addDragEventOnProjectsContainer(ContainerElement) {
+  if (!ContainerElement) throw new Error("ContainerElement not found!");
+
+  ContainerElement.addEventListener("dragstart", (e) => {
+    const target_element = e.target;
+    if (target_element.className.includes("project")) {
+      const id = target_element.id;
+      const content = target_element.firstElementChild.innerHTML;
+      const contentDate =
+        target_element.firstElementChild.nextElementSibling.innerHTML;
+
+      e.dataTransfer.setData(
+        "text/plain",
+        `name: ${content};id: ${id};date: ${contentDate}`
+      );
+      e.dataTransfer.effectAllowed = "move";
+    }
+  });
+
+  ContainerElement.addEventListener("dragover", (e) => {
+    const target_element = e.target;
+    if (target_element.className.includes("project")) e.preventDefault();
+  });
+
+  ContainerElement.addEventListener("drop", (e) => {
+    const target_element = e.target;
+
+    if (target_element.className.includes("project")) {
+      e.preventDefault();
+      const draggedText = e.dataTransfer.getData("text/plain");
+
+      const data = `${draggedText}`.split(";");
+      const data_name = data[0];
+      const data_id = data[1];
+      const data_date = data[2];
+
+      const id = data_id.split(":")[1].trim();
+      const name = data_name.split(":")[1].trim();
+      const date = data_date.split(":")[1].trim();
+
+      const target_element_contentElement = target_element.firstElementChild;
+      const target_element_dateElement =
+        target_element_contentElement.nextElementSibling;
+      const target_element_btnElement =
+        target_element_dateElement.nextElementSibling;
+
+      const dragELement = document.getElementById(id);
+      const contentElement = dragELement.firstElementChild;
+      const dateElement = contentElement.nextElementSibling;
+      const btnElement = dateElement.nextElementSibling;
+
+      dragELement.id = target_element.id;
+      contentElement.innerHTML = target_element_contentElement.innerHTML;
+      dateElement.innerHTML = target_element_dateElement.innerHTML;
+      btnElement.dataset.Id = target_element_btnElement.dataset.Id;
+
+      target_element.id = id;
+      target_element_contentElement.innerHTML = name;
+      target_element_dateElement.innerHTML = date;
+      target_element_btnElement.dataset.Id = id;
+
+      e.dataTransfer.clearData("text/plain");
+    }
+  });
+}
+
+addDragEventOnProjectsContainer(projects_Container);
+
+function addDragEventOnKanbanTasksContainer(ContainerElement) {
+  if (ContainerElement) {
+    ContainerElement.addEventListener("dragstart", (e) => {
+      const target_element = e.target;
+      if (
+        target_element.className.includes(
+          "kanban_board_col_items_tasks_task_container"
+        )
+      ) {
+        const id = target_element.id;
+        const name = target_element.firstElementChild.innerHTML;
+        e.dataTransfer.setData("text/plain", `name:${name};id:${id}`);
+      }
+    });
+
+    ContainerElement.addEventListener("dragover", (e) => {
+      const target_element = e.target;
+      if (
+        target_element.className.includes(
+          "kanban_board_col_items_tasks_task_container"
+        )
+      ) {
+        e.preventDefault();
+      }
+    });
+
+    ContainerElement.addEventListener("drop", (e) => {
+      const target_element = e.target;
+
+      if (
+        target_element.className.includes(
+          "kanban_board_col_items_tasks_task_container"
+        )
+      ) {
+        e.preventDefault();
+
+        const draggedText = e.dataTransfer.getData("text/plain").split(";");
+
+        const draggedText_name_data = draggedText[0];
+        const draggedText_id_data = draggedText[1];
+
+        const name = draggedText_name_data.split(":")[1];
+        const id = draggedText_id_data.split(":")[1];
+
+        const target_name_element = e.target.firstElementChild;
+        const target_btn_element = e.target.lastElementChild;
+
+        const query_element = document.getElementById(id);
+        const query_name_element = query_element.firstElementChild;
+        const query_btn_element = query_element.lastElementChild;
+
+        let idtype = id.split("[")[0];
+        if (idtype == "td") idtype = "todo";
+        if (idtype == "ip") idtype = "inProgress";
+        if (idtype == "d") idtype = "done";
+
+        let targetElementIdtype = target_element.id.split("[")[0];
+        if (targetElementIdtype == "td") targetElementIdtype = "todo";
+        if (targetElementIdtype == "ip") targetElementIdtype = "inProgress";
+        if (targetElementIdtype == "d") targetElementIdtype = "done";
+
+        if (targetElementIdtype == idtype) {
+          query_element.setAttribute("id", target_element.id);
+          query_name_element.innerHTML = target_name_element.innerHTML;
+          query_btn_element.dataset.Id = target_element.id;
+
+          target_element.setAttribute("id", id);
+          target_name_element.innerHTML = name;
+          target_btn_element.dataset.Id = id;
+        } else {
+          const project_dashboard_text_element = document.querySelector(
+            ".project_dashboard_text"
+          );
+          const projectId = project_dashboard_text_element.dataset.projectId;
+
+          const project = projects.getProjectById(projectId);
+
+          project.updateTaskById(targetElementIdtype, target_element.id, name);
+          if (id.includes("ip")) {
+            project.updateTaskById(
+              "inProgress",
+              id,
+              target_name_element.innerHTML
+            );
+          }
+          if (id.includes("td")) {
+            project.updateTaskById("todo", id, target_name_element.innerHTML);
+          }
+          if (id.includes("d")) {
+            project.updateTaskById("done", id, target_name_element.innerHTML);
+          }
+
+          projects.saveProjectsOnLocalStorage();
+
+          query_name_element.innerHTML = target_name_element.innerHTML;
+
+          target_name_element.innerHTML = name;
+        }
+        e.dataTransfer.clearData("text/plain");
+      }
+    });
+  }
+}
+
+addDragEventOnKanbanTasksContainer(kanban_board_todo_tasks_container);
+addDragEventOnKanbanTasksContainer(kanban_board_inProgress_tasks_container);
+addDragEventOnKanbanTasksContainer(kanban_board_done_tasks_container);
 
 const sortBtn = document.querySelector("#sort");
 

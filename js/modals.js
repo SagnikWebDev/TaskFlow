@@ -94,6 +94,8 @@ class Project {
       "class",
       "kanban_board_col_items_tasks_task_container kanban_board_col_todo_tasks_task_container"
     );
+    todo_task_element.setAttribute("id", id);
+    todo_task_element.setAttribute("draggable", true);
 
     const todo_task_name_element = document.createElement("p");
     const todo_task_name_element_text = document.createTextNode(name);
@@ -110,7 +112,7 @@ class Project {
       "class",
       "del_kanban_board_col_items_task del_kanban_board_col_todo_task"
     );
-    todo_task_btn_element.setAttribute("id", id);
+    todo_task_btn_element.dataset.Id = id;
     todo_task_btn_element.appendChild(todo_task_btn_element_text);
     todo_task_element.appendChild(todo_task_btn_element);
 
@@ -125,6 +127,8 @@ class Project {
       "class",
       "kanban_board_col_items_tasks_task_container kanban_board_col_inProgress_tasks_task_container"
     );
+    InProgress_task_element.setAttribute("id", id);
+    InProgress_task_element.setAttribute("draggable", true);
 
     const InProgress_task_name_element = document.createElement("p");
     const InProgress_task_name_element_text = document.createTextNode(name);
@@ -141,7 +145,7 @@ class Project {
       "class",
       "del_kanban_board_col_items_task del_kanban_board_col_inProgress_task"
     );
-    InProgress_task_btn_element.setAttribute("id", id);
+    InProgress_task_btn_element.dataset.Id = id;
     InProgress_task_btn_element.appendChild(InProgress_task_btn_element_text);
     InProgress_task_element.appendChild(InProgress_task_btn_element);
 
@@ -156,6 +160,8 @@ class Project {
       "class",
       "kanban_board_col_items_tasks_task_container kanban_board_col_done_tasks_task_container"
     );
+    done_task_element.setAttribute("id", id);
+    done_task_element.setAttribute("draggable", true);
 
     const done_task_name_element = document.createElement("p");
     const done_task_name_element_text = document.createTextNode(name);
@@ -172,7 +178,7 @@ class Project {
       "class",
       "del_kanban_board_col_items_task del_kanban_board_col_done_task"
     );
-    done_task_btn_element.setAttribute("id", id);
+    done_task_btn_element.dataset.Id = id;
     done_task_btn_element.appendChild(done_task_btn_element_text);
     done_task_element.appendChild(done_task_btn_element);
 
@@ -188,7 +194,7 @@ class Project {
 
   addInProgressTaskOnUi(inProgressTaskElement) {
     const kanban_board_col_inProgress_tasks = document.querySelector(
-      ".kanban_board_col_inProgess_tasks"
+      ".kanban_board_col_inProgress_tasks"
     );
     kanban_board_col_inProgress_tasks.appendChild(inProgressTaskElement);
   }
@@ -205,7 +211,7 @@ class Project {
       ".kanban_board_col_todo_tasks"
     );
     const kanban_board_col_inProgress_tasks = document.querySelector(
-      ".kanban_board_col_inProgess_tasks"
+      ".kanban_board_col_inProgress_tasks"
     );
     const kanban_board_col_done_tasks = document.querySelector(
       ".kanban_board_col_done_tasks"
@@ -265,8 +271,54 @@ class Project {
     this.kanban_table_data.done_data = [...deletedDone_dataArray];
   }
 
+  updateTaskById(TaskType, TaskId, taskName) {
+    if (TaskType == "todo") {
+      const task = this.kanban_table_data.todo_data.filter(
+        (task) => task.id == TaskId
+      )?.[0];
+      if (task) task.name = taskName;
+    }
+    if (TaskType == "inProgress") {
+      const task = this.kanban_table_data.inProgress_data.filter(
+        (task) => task.id == TaskId
+      )?.[0];
+      if (task) task.name = taskName;
+    }
+    if (TaskType == "done") {
+      const task = this.kanban_table_data.done_data.filter(
+        (task) => task.id == TaskId
+      )?.[0];
+      if (task) task.name = taskName;
+    }
+  }
+
+  updateKanbanEmptyValue() {
+    const numOfTodoTask = this.kanban_table_data.todo_data.length;
+    const numOfInprogressTask = this.kanban_table_data.inProgress_data.length;
+    const numOfDoneTask = this.kanban_table_data.done_data.length;
+
+    if (!numOfTodoTask && !numOfInprogressTask && !numOfDoneTask) {
+      this.KanbanTable_Empty_value = true;
+    } else {
+      this.KanbanTable_Empty_value = false;
+    }
+    return this.isKanbanTableEmpty;
+  }
+
   get isKanbanTableEmpty() {
     return this.kanban_table_data.empty;
+  }
+
+  deleteTaskByDrag(deleteTaskType, deleteTaskId) {
+    if (deleteTaskType == "td") {
+      this.deleteTaskOnTodoData(deleteTaskId);
+    }
+    if (deleteTaskType == "ip") {
+      this.deleteTaskOnInProgressData(deleteTaskId);
+    }
+    if (deleteTaskType == "d") {
+      this.deleteTaskOnDoneData(deleteTaskId);
+    }
   }
 
   set KanbanTable_Empty_value(value) {
@@ -331,60 +383,6 @@ export class Projects {
     project_btn_element.setAttribute("class", "project_delete_btn");
     project_btn_element.appendChild(project_btn_element_text);
     project_element.appendChild(project_btn_element);
-
-    project_element.addEventListener("dragstart", (e) => {
-      const target_element = e.target;
-      const id = target_element.id;
-      const content = target_element.firstElementChild.innerHTML;
-      const contentDate =
-        target_element.firstElementChild.nextElementSibling.innerHTML;
-
-      e.dataTransfer.setData(
-        "text/plain",
-        `name: ${content};id: ${id};date: ${contentDate}`
-      );
-      e.dataTransfer.effectAllowed = "move";
-    });
-
-    project_element.addEventListener("dragover", (e) => {
-      e.preventDefault();
-    });
-
-    project_element.addEventListener("drop", (e) => {
-      e.preventDefault();
-      const draggedText = e.dataTransfer.getData("text/plain");
-
-      const data = `${draggedText}`.split(";");
-      const data_name = data[0];
-      const data_id = data[1];
-      const data_date = data[2];
-
-      const id = data_id.split(":")[1].trim();
-      const name = data_name.split(":")[1].trim();
-      const date = data_date.split(":")[1].trim();
-
-      const target_element = e.target;
-      const target_element_contentElement = target_element.firstElementChild;
-      const target_element_dateElement =
-        target_element_contentElement.nextElementSibling;
-      const target_element_btnElement =
-        target_element_dateElement.nextElementSibling;
-
-      const dragELement = document.getElementById(id);
-      const contentElement = dragELement.firstElementChild;
-      const dateElement = contentElement.nextElementSibling;
-      const btnElement = dateElement.nextElementSibling;
-
-      dragELement.id = target_element.id;
-      contentElement.innerHTML = target_element_contentElement.innerHTML;
-      dateElement.innerHTML = target_element_dateElement.innerHTML;
-      btnElement.dataset.Id = target_element_btnElement.dataset.Id;
-
-      target_element.id = id;
-      target_element_contentElement.innerHTML = name;
-      target_element_dateElement.innerHTML = date;
-      target_element_btnElement.dataset.Id = id;
-    });
 
     return project_element;
   }
