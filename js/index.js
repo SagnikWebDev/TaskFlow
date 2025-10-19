@@ -95,7 +95,9 @@ const projects = new Projects();
 
 projects.reloadProjectsFromLocalStorage();
 
-projects.UdpateReloadProjectsFromLocalStorageOnUi();
+projects.updateTheGlobalCounts();
+
+projects.UpdateReloadProjectsFromLocalStorageOnUi();
 
 if (!projects.empty) {
   displayEmptyProjectContainer("hide");
@@ -131,6 +133,10 @@ project_create_Modal_btn_element.addEventListener("click", (event) => {
   const project = projects.createNewProject(projectName);
 
   if (projects.empty) projects.empty = false;
+
+  projects.updateTheCounts();
+
+  projects.updateTheGlobalCounts();
 
   projects.saveProjectsOnLocalStorage();
 
@@ -272,6 +278,10 @@ task_create_btn_element.addEventListener("click", (event) => {
     project.KanbanTable_Empty_value = false;
     displayEmptyTasksContainer("hide");
   }
+
+  projects.updateTheCounts();
+
+  projects.updateTheGlobalCounts();
 
   projects.saveProjectsOnLocalStorage();
 

@@ -341,6 +341,10 @@ export class Projects {
   projects = [];
   sortBy = "ascending";
   empty = true;
+  count = 0;
+  tdcount = 0;
+  ipcount = 0;
+  dcount = 0;
 
   createNewProject(name, bypass = false) {
     ArgumentErrorHandling(
@@ -457,6 +461,46 @@ export class Projects {
     return project[0];
   }
 
+  countTaskLength(taskType) {
+    let numOfTask = 0;
+    if (taskType == "todo") {
+      this.projects.forEach((project) => {
+        numOfTask += project.kanban_table_data.todo_data.length;
+      });
+    }
+    if (taskType == "inProgress") {
+      this.projects.forEach((project) => {
+        numOfTask += project.kanban_table_data.todo_data.length;
+      });
+    }
+    if (taskType == "done") {
+      this.projects.forEach((project) => {
+        numOfTask += project.kanban_table_data.todo_data.length;
+      });
+    }
+    return numOfTask;
+  }
+
+  updateTheCounts() {
+    const projectLength = this.projects.length;
+    if (this.count < projectLength) this.count = projectLength;
+    if (projectLength) {
+      const tdTaskLength = this.countTaskLength("todo");
+      if (this.tdcount < tdTaskLength) this.tdcount = tdTaskLength;
+      const ipTaskLength = this.countTaskLength("inProgress");
+      if (this.ipcount < ipTaskLength) this.ipcount = ipTaskLength;
+      const dTaskLength = this.countTaskLength("done");
+      if (this.dcount < dTaskLength) this.dcount = dTaskLength;
+    }
+  }
+
+  updateTheGlobalCounts() {
+    count = this.count;
+    tdCount = this.tdcount;
+    ipCount = this.ipcount;
+    dCount = this.dcount;
+  }
+
   reloadProjects(projects) {
     this.projects = projects;
   }
@@ -475,10 +519,14 @@ export class Projects {
       );
       this.empty = localProjects.empty;
       this.sortBy = localProjects.sortBy;
+      this.count = localProjects.count;
+      this.tdcount = localProjects.tdcount;
+      this.ipcount = localProjects.ipcount;
+      this.dcount = localProjects.dcount;
     }
   }
 
-  UdpateReloadProjectsFromLocalStorageOnUi() {
+  UpdateReloadProjectsFromLocalStorageOnUi() {
     this.updateProjectElementsOnUi();
 
     this.displayProjectElementsOnUi("unhide");
